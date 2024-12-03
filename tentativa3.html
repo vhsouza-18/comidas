@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrega de Comida</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden; /* Evitar scroll horizontal */
+    }
+
+    /* Cabeçalho */
+    header {
+      background: #ff9800;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin-bottom: 10px;
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+    }
+    nav ul li {
+      margin: 0 10px;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    /* Conteúdo principal */
+    main {
+      padding: 20px;
+    }
+    .restaurant-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      min-width: 320px; /* Evitar que o conteúdo fique comprimido em telas pequenas */
+    }
+    .restaurant {
+      flex: 1 1 calc(100% - 40px); /* Cada restaurante ocupa a largura disponível */
+      max-width: 250px; /* Limite da largura */
+      text-align: center;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      border-radius: 5px;
+    }
+    .restaurant img {
+      width: 100%;
+      border-radius: 5px;
+    }
+    .restaurant button {
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .restaurant button:hover {
+      background: #e67e22;
+    }
+
+    /* Carrinho */
+    .cart {
+      margin-top: 30px;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .cart h2 {
+      margin-bottom: 15px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .cart-item span {
+      font-weight: bold;
+    }
+    .total {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    #finalizar {
+      margin-top: 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #finalizar:hover {
+      background: #45a049;
+    }
+
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: 30px;
+    }
+
+    /* Media Queries para telas menores */
+    @media (max-width: 600px) {
+      .restaurant {
+        flex: 1 1 100%; /* Cada item ocupa 100% da largura em dispositivos móveis */
+        max-width: none; /* Remove qualquer limitação de largura máxima */
+      }
+      nav ul {
+        flex-direction: column; /* Navegação vertical em telas menores */
+        align-items: center;
+      }
+      nav ul li {
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <h1>Entrega de Comida</h1>
+    <nav>
+      <ul>
+        <li><a href="#restaurants">Restaurantes</a></li>
+        <li><a href="#cart">Carrinho</a></li>
+        <li><a href="#contact">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main>
+    <section id="restaurants">
+      <h2>Restaurantes Disponíveis</h2>
+      <div class="restaurant-list" id="restaurant-list">
+        <!-- Conteúdo dinâmico -->
+      </div>
+    </section>
+
+    <section id="cart" class="cart">
+      <h2>Seu Carrinho</h2>
+      <div id="cart-items">
+        <p>Seu carrinho está vazio.</p>
+      </div>
+      <p class="total" id="total">Total: R$ 0,00</p>
+      <button id="finalizar" onclick="finalizarPedidos()" style="display: none;">Finalizar Pedidos</button>
+    </section>
+  </main>
+
+  <!-- Rodapé -->
+  <footer>
+    <p>© 2024 Entrega de Comida. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    // Dados simulados
+    const restaurantes = [
+      { id: 1, nome: "Palácio da Pizza", preco: 20, imagem: "https://via.placeholder.com/250" },
+      { id: 2, nome: "Hamburgueria Top", preco: 15, imagem: "https://via.placeholder.com/250" },
+      { id: 3, nome: "Cantinho do Sushi", preco: 25, imagem: "https://via.placeholder.com/250" },
+    ];
+
+    const carrinho = [];
+
+    // Função para renderizar os restaurantes
+    function renderizarRestaurantes() {
+      const listaRestaurantes = document.getElementById("restaurant-list");
+      listaRestaurantes.innerHTML = ''; // Limpar antes de adicionar novamente
+      restaurantes.forEach(restaurante => {
+        const div = document.createElement("div");
+        div.className = "restaurant";
+        div.innerHTML = `
+          <img src="${restaurante.imagem}" alt="${restaurante.nome}">
+          <h3>${restaurante.nome}</h3>
+          <p>Preço: R$ ${restaurante.preco.toFixed(2)}</p>
+          <button onclick="adicionarAoCarrinho(${restaurante.id})">Adicionar ao Carrinho</button>
+        `;
+        listaRestaurantes.appendChild(div);
+      });
+    }
+
+    // Função para adicionar ao carrinho
+    function adicionarAoCarrinho(id) {
+      const restaurante = restaurantes.find(r => r.id === id);
+      carrinho.push(restaurante);
+      renderizarCarrinho();
+    }
+
+    // Função para renderizar o carrinho
+    function renderizarCarrinho() {
+      const itensCarrinho = document.getElementById("cart-items");
+      const total = document.getElementById("total");
+      const btnFinalizar = document.getElementById("finalizar");
+      itensCarrinho.innerHTML = "";
+
+      if (carrinho.length === 0) {
+        itensCarrinho.innerHTML = "<p>Seu carrinho está vazio.</p>";
+        total.textContent = "Total: R$ 0,00";
+        btnFinalizar.style.display = "none";
+        return;
+      }
+
+      let precoTotal = 0;
+      carrinho.forEach(item => {
+        precoTotal += item.preco;
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <span>${item.nome}</span>
+          <span>R$ ${item.preco.toFixed(2)}</span>
+        `;
+        itensCarrinho.appendChild(div);
+      });
+
+      total.textContent = `Total: R$ ${precoTotal.toFixed(2)}`;
+      btnFinalizar.style.display = "block";
+    }
+
+    // Função para finalizar pedidos
+    function finalizarPedidos() {
+      alert("Pedido finalizado com sucesso! Obrigado por comprar conosco.");
+      carrinho.length = 0; // Limpa o carrinho
+      renderizarCarrinho();
+    }
+
+    // Inicializar
+    renderizarRestaurantes();
+  </script>
+</body>
+</html>
+
